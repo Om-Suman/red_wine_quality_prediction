@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wine Quality Predictor</title>
+    <style>
+      /* Reset and base */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-x: hidden;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        max-width: 1200px;
+        width: 100%;
+        max-height: 95vh;
+        overflow-y: auto;
+        animation: fadeInUp 0.8s ease-out;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h2 {
+        text-align: center;
+        color: #4a5568;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #718096;
+        margin-bottom: 20px;
+        font-size: 1rem;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .input-group {
+        position: relative;
+      }
+
+      .input-group label {
+        display: block;
+        color: #4a5568;
+        font-weight: 600;
+        margin-bottom: 4px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        background: #f7fafc;
+        outline: none;
+      }
+
+      .input-group input:focus {
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .input-group input:hover:not(:focus) {
+        border-color: #cbd5e0;
+        background: white;
+      }
+
+      .predict-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 15px;
+      }
+
+      .predict-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+      }
+
+      .predict-btn:active {
+        transform: translateY(0);
+      }
+
+      .predict-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .predict-btn:hover::before {
+        left: 100%;
+      }
+
+      .predict-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-loading {
+        display: inline-block;
+      }
+
+      .prediction-result {
+        margin-top: 15px;
+        padding: 15px;
+        background: linear-gradient(135deg, #48bb78, #38a169);
+        color: white;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 600;
+        box-shadow: 0 8px 20px rgba(72, 187, 120, 0.3);
+        animation: slideIn 0.5s ease-out;
+        display: none;
+      }
+
+      .prediction-result.show {
+        display: block;
+      }
+
+      .error-result {
+        background: linear-gradient(135deg, #f56565, #e53e3e);
+        box-shadow: 0 8px 20px rgba(245, 101, 101, 0.3);
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .wine-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        display: block;
+        text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px 15px;
+          margin: 5px;
+          max-height: 98vh;
+        }
+
+        h2 {
+          font-size: 1.8rem;
+        }
+
+        .form-grid {
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 12px;
+        }
+
+        .wine-icon {
+          font-size: 1.5rem;
+          margin-bottom: 8px;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        .form-grid {
+          grid-template-columns: repeat(6, 1fr);
+        }
+      }
+
+      /* Wine glass animation */
+      .wine-glass {
+        display: inline-block;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="wine-icon">
+        <span class="wine-glass">🍷</span>
+      </div>
+
+      <h2>Wine Quality Predictor</h2>
+      <p class="subtitle">
+        Enter wine characteristics to predict quality score
+      </p>
+
+      <form id="predictionForm">
+        <div class="form-grid">
+          <div class="input-group">
+            <label for="volatile_acidity">Volatile Acidity</label>
+            <input
+              type="number"
+              step="0.001"
+              name="volatile_acidity"
+              id="volatile_acidity"
+              placeholder="e.g., 0.35"
+              min="0"
+              max="2"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="residual_sugar">Residual Sugar</label>
+            <input
+              type="number"
+              step="0.1"
+              name="residual_sugar"
+              id="residual_sugar"
+              placeholder="e.g., 2.5"
+              min="0"
+              max="20"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="chlorides">Chlorides</label>
+            <input
+              type="number"
+              step="0.001"
+              name="chlorides"
+              id="chlorides"
+              placeholder="e.g., 0.085"
+              min="0"
+              max="1"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="total_sulfur_dioxide">Total Sulfur Dioxide</label>
+            <input
+              type="number"
+              step="1"
+              name="total_sulfur_dioxide"
+              id="total_sulfur_dioxide"
+              placeholder="e.g., 120"
+              min="0"
+              max="300"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="density">Density</label>
+            <input
+              type="number"
+              step="0.0001"
+              name="density"
+              id="density"
+              placeholder="e.g., 0.9950"
+              min="0.9900"
+              max="1.0000"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="sulphates">Sulphates</label>
+            <input
+              type="number"
+              step="0.01"
+              name="sulphates"
+              id="sulphates"
+              placeholder="e.g., 0.65"
+              min="0"
+              max="2"
+              required
+            />
+          </div>
+
+          <div class="input-group">
+            <label for="alcohol">Alcohol Content (%)</label>
+            <input
+              type="number"
+              step="0.1"
+              name="alcohol"
+              id="alcohol"
+              placeholder="e.g., 12.5"
+              min="8"
+              max="16"
+              required
+            />
+          </div>
+        </div>
+
+        <button type="submit" class="predict-btn" id="predictButton">
+          <span class="btn-text">Predict Wine Quality</span>
+          <span class="btn-loading" style="display: none">Predicting...</span>
+        </button>
+      </form>
+
+      <div class="prediction-result" id="predictionResult">
+        <h3 id="predictionText"></h3>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("predictionForm");
+      const inputs = document.querySelectorAll('input[type="number"]');
+      const predictButton = document.getElementById("predictButton");
+      const btnText = document.querySelector(".btn-text");
+      const btnLoading = document.querySelector(".btn-loading");
+      const predictionResult = document.getElementById("predictionResult");
+      const predictionText = document.getElementById("predictionText");
+
+      // Input validation feedback
+      inputs.forEach((input) => {
+        input.addEventListener("input", function () {
+          if (this.value && this.checkValidity()) {
+            this.style.borderColor = "#48bb78";
+            this.style.backgroundColor = "#f0fff4";
+          } else if (this.value && !this.checkValidity()) {
+            this.style.borderColor = "#f56565";
+            this.style.backgroundColor = "#fff5f5";
+          } else {
+            this.style.borderColor = "#e2e8f0";
+            this.style.backgroundColor = "#f7fafc";
+          }
+        });
+      });
+
+      // Handle form submission with AJAX
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        predictButton.disabled = true;
+        btnText.style.display = "none";
+        btnLoading.style.display = "inline";
+        predictionResult.classList.remove("show");
+
+        try {
+          const formData = new FormData(form);
+
+          const response = await fetch("/predict", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          predictionText.textContent = data.prediction_text || "No result";
+          predictionResult.className = "prediction-result show";
+          if (data.error) {
+            predictionResult.classList.add("error-result");
+          } else {
+            predictionResult.classList.remove("error-result");
+          }
+
+          predictionResult.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        } catch (error) {
+          predictionText.textContent = "Error: Unable to connect to server";
+          predictionResult.className = "prediction-result show error-result";
+        } finally {
+          predictButton.disabled = false;
+          btnText.style.display = "inline";
+          btnLoading.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>
