@@ -30,9 +30,13 @@ The project uses the **Red Wine Quality** dataset from Kaggle
 | `sulphates`            | Sulfate content                      |
 | `alcohol`              | Alcohol percentage                   |
 
+Dropped low-impact features ('pH', 'fixed acidity', 'citric acid', 'free sulfur dioxide') based on their correlation with the target variable.
+
 The quality scores are binarized:
 - `quality >= 7` → **Excellent (1)**
 - `quality < 7`  → **Poor (0)**
+---
+
 
 ---
 ### Accuracy of diffrent models
