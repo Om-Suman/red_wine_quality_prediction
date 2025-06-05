@@ -1,6 +1,6 @@
 # 🍷 Red Wine Quality Prediction
 
-This is a web-based machine learning application that predicts the quality of red wine based on its physicochemical properties. The model is built using **XGBoost** and served via a **Flask** web interface.
+This is a web-based machine learning application that predicts the quality of red wine based on its physicochemical properties. I trained many models but one which performed the best was  **XGBoost** . I used flask for web interface
 
 ## 🚀 Features
 
@@ -14,9 +14,9 @@ This is a web-based machine learning application that predicts the quality of re
 
 ## 🧪 Dataset
 
-The project uses the **Red Wine Quality** dataset from the UCI Machine Learning Repository:
+The project uses the **Red Wine Quality** dataset from Kaggle
 
-- https://archive.ics.uci.edu/ml/datasets/wine+quality
+- https://www.kaggle.com/datasets/uciml/red-wine-quality-cortez-et-al-2009
 
 ### Features used for prediction:
 
@@ -36,9 +36,5 @@ The quality scores are binarized:
 
 ---
 
-## 📦 Installation
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/wine-quality-predictor.git
-cd wine-quality-predictor
+
