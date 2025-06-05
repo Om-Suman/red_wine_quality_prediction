@@ -35,6 +35,17 @@ The quality scores are binarized:
 - `quality < 7`  → **Poor (0)**
 
 ---
+### Accuracy of diffrent models
+
+| Models                 | Accuracy  |
+|------------------------|-----------|
+| `SVC`                  | 86.63     |
+|`DecisionTreeClassifier`| 86.66     |
+|`RandomForestClassifier`| 93.02     |
+| `XGBClassifier`        | 93.60     |
+| `KNeighborsClassifier` | 90.70     |
+
+After calculating cross validation score of each , I figured out that XGBclassifier is the best fit model for this project
 
 
 
