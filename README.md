@@ -2,6 +2,8 @@
 
 This is a web-based machine learning application that predicts the quality of red wine based on its physicochemical properties. I trained many models but one which performed the best was  **XGBoost** . I used flask for web interface
 
+You can see the project with this link : https://red-wine-quality-prediction-w5zz.onrender.com
+
 ## 🚀 Features
 
 - Clean and responsive UI
