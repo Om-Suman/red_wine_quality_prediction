@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: wine-quality-predictor
+    env: python
+    buildCommand: ""
+    startCommand: python app.py
+    runtime: python
+    region: oregon
+    plan: free
+    autoDeploy: true

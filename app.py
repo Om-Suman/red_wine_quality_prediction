@@ -14,24 +14,20 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Define expected features in the correct order matching model training
         feature_names = [
             'volatile acidity', 'residual sugar',
             'chlorides', 'total sulfur dioxide', 
             'density', 'sulphates', 'alcohol'
         ]
 
-        # Extract features from form, convert to float safely
         features = []
         for fname in feature_names:
-            # form keys have underscores instead of spaces, so map accordingly:
             form_key = fname.replace(' ', '_')
             val = request.form.get(form_key)
             if val is None or val == '':
                 raise ValueError(f'Missing value for {fname}')
             features.append(float(val))
 
-        # Create a DataFrame to feed into the model
         sample_df = pd.DataFrame([features], columns=feature_names)
 
         # Get prediction (assumes model outputs 1 or 0 for Excellent/Poor)
@@ -52,4 +48,6 @@ def predict():
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    import os
+    port = int(os.environ.get("PORT", 5000))  
+    app.run(debug=True, host='0.0.0.0', port=port)
